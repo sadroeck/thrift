@@ -25,6 +25,8 @@ use super::{
 use super::{TOutputProtocol, TOutputProtocolFactory, TSetIdentifier, TStructIdentifier, TType};
 use transport::{TReadTransport, TWriteTransport};
 use {ProtocolError, ProtocolErrorKind};
+use log::debug;
+use std::time::Instant;
 
 const BINARY_PROTOCOL_VERSION_1: u32 = 0x80010000;
 
@@ -81,8 +83,10 @@ where
 {
     #[cfg_attr(feature = "cargo-clippy", allow(collapsible_if))]
     fn read_message_begin(&mut self) -> ::Result<TMessageIdentifier> {
+        let start = Instant::now();
         let mut first_bytes = vec![0; 4];
         self.transport.read_exact(&mut first_bytes[..])?;
+        debug!("#### Thrift first bytes -- {}micros", start.elapsed().as_micros());
 
         // the thrift version header is intentionally negative
         // so the first check we'll do is see if the sign bit is set
