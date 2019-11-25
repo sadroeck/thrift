@@ -196,6 +196,9 @@ where
         &mut self,
         stream: TcpStream,
     ) -> ::Result<(Box<dyn TInputProtocol + Send>, Box<dyn TOutputProtocol + Send>)> {
+        // Set TCP nodelay
+        stream.set_nodelay(true)?;
+
         // create the shared tcp stream
         let channel = TTcpChannel::with_stream(stream);
 
